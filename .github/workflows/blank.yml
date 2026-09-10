@@ -1,0 +1,42 @@
+name: Bimby TM7 APK bauen
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Projekt laden
+        uses: actions/checkout@v4
+
+      - name: Java 17 einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle einrichten
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Projekt entpacken
+        run: |
+          unzip -o Bimby_TM7_BLE_Test_AndroidStudio.zip
+
+      - name: APK bauen
+        run: |
+          cd Bimby_TM7_BLE_Test
+          gradle assembleDebug
+
+      - name: APK bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bimby-TM7-BLE-Test-APK
+          path: Bimby_TM7_BLE_Test/app/build/outputs/apk/debug/app-debug.apk
+          
